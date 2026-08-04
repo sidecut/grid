@@ -39,8 +39,8 @@ canvas {
 <div id="helpScreen">
   <div id="helpContent">
     <h1>Grid Controls</h1>
-    <p>Click, press H, or press Space to leave help mode.</p>
-    <p>/ or ? : Show help mode</p>
+    <p>Click, press /, H, or Space to leave help mode.</p>
+    <p>/ or h : Toggle help mode</p>
     <p>w or g : Toggle white canvas / grid</p>
     <p>f : Toggle fullscreen</p>
     <p>p : Toggle full-width plus sign</p>
@@ -229,19 +229,20 @@ function handleKeydown(event) {
   }
 
   const isSpace = event.key === ' ' || event.key === 'Spacebar';
+  const isHelpToggleKey = event.key === '/' || event.key === '?' || event.key === 'h' || event.key === 'H';
 
-  if (isHelpMode) {
-    if (event.key === 'h' || event.key === 'H' || isSpace) {
-      event.preventDefault();
-      exitHelpMode();
-    }
+  if (isHelpToggleKey) {
+    event.preventDefault();
+    isHelpMode = !isHelpMode;
+    render();
     return;
   }
 
-  if (event.key === '/' || event.key === '?') {
-    event.preventDefault();
-    isHelpMode = true;
-    render();
+  if (isHelpMode) {
+    if (isSpace) {
+      event.preventDefault();
+      exitHelpMode();
+    }
     return;
   }
 
