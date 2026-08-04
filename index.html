@@ -1,1 +1,188 @@
-grid.html
+<style>
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+canvas {
+  display: block;
+}
+</style>
+<body>
+<canvas id="gridCanvas"></canvas>
+</body>
+<script>
+const canvas = document.getElementById('gridCanvas');
+const ctx = canvas.getContext('2d');
+let gridSize = 15; // Size of each grid square in pixels
+const centerLineWidth = 4;
+
+let showWhiteCanvas = false;
+let plusIsFullWidth = true;
+
+function setGridSize(nextSize) {
+  const parsedSize = Number(nextSize);
+
+  if (!Number.isFinite(parsedSize) || parsedSize <= 0) {
+    return false;
+  }
+
+  gridSize = Math.max(2, Math.round(parsedSize));
+  drawGrid();
+  return true;
+}
+
+function toggleFullscreen() {
+  const docEl = document.documentElement;
+
+  if (!document.fullscreenElement) {
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen().catch(() => {
+        // Ignore fullscreen errors that can happen on unsupported environments.
+      });
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen();
+    }
+    return;
+  }
+
+  if (document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {
+      // Ignore fullscreen errors that can happen on unsupported environments.
+    });
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
+function drawGrid() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+
+  if (showWhiteCanvas) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  } else {
+    ctx.strokeStyle = '#333'; // Grid line color
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+
+    // Draw vertical lines outward from the exact canvas center.
+    for (let x = centerX; x <= canvas.width; x += gridSize) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+    }
+    for (let x = centerX - gridSize; x >= 0; x -= gridSize) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+    }
+
+    // Draw horizontal lines outward from the exact canvas center.
+    for (let y = centerY; y <= canvas.height; y += gridSize) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+    }
+    for (let y = centerY - gridSize; y >= 0; y -= gridSize) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+    }
+
+    ctx.stroke();
+  }
+
+  // Draw a thicker plus sign at the exact canvas center.
+  ctx.strokeStyle = '#333';
+  ctx.beginPath();
+  ctx.lineWidth = centerLineWidth;
+
+  if (plusIsFullWidth) {
+    ctx.moveTo(centerX, 0);
+    ctx.lineTo(centerX, canvas.height);
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(canvas.width, centerY);
+  } else {
+    ctx.moveTo(centerX, centerY - gridSize);
+    ctx.lineTo(centerX, centerY + gridSize);
+    ctx.moveTo(centerX - gridSize, centerY);
+    ctx.lineTo(centerX + gridSize, centerY);
+  }
+
+  ctx.stroke();
+}
+
+function showHelp() {
+  alert(
+    'Keyboard shortcuts:\n' +
+    '/ or ? : Show this help\n' +
+    'w or g : Toggle white canvas / grid\n' +
+    'f : Toggle fullscreen\n' +
+    'p : Toggle full-width plus sign\n' +
+    'n : Set grid size\n' +
+    '+ or = : Increase grid size\n' +
+    '- : Decrease grid size'
+  );
+}
+
+function handleKeydown(event) {
+  if (event.metaKey || event.ctrlKey || event.altKey) {
+    return;
+  }
+
+  if (event.key === '/' || event.key === '?') {
+    event.preventDefault();
+    showHelp();
+    return;
+  }
+
+  if (event.key === 'w' || event.key === 'W' || event.key === 'g' || event.key === 'G') {
+    showWhiteCanvas = !showWhiteCanvas;
+    drawGrid();
+    return;
+  }
+
+  if (event.key === 'f' || event.key === 'F') {
+    toggleFullscreen();
+    return;
+  }
+
+  if (event.key === 'p' || event.key === 'P') {
+    plusIsFullWidth = !plusIsFullWidth;
+    drawGrid();
+    return;
+  }
+
+  if (event.key === 'n' || event.key === 'N') {
+    const input = prompt('Enter grid size in pixels:', String(gridSize));
+
+    if (input === null) {
+      return;
+    }
+
+    if (!setGridSize(input)) {
+      alert('Grid size must be a positive number.');
+    }
+    return;
+  }
+
+  if (event.key === '+' || event.key === '=') {
+    setGridSize(gridSize + 1);
+    return;
+  }
+
+  if (event.key === '-') {
+    setGridSize(gridSize - 1);
+  }
+}
+
+window.addEventListener('resize', drawGrid);
+document.addEventListener('click', toggleFullscreen);
+document.addEventListener('keydown', handleKeydown);
+drawGrid();
+</script>
