@@ -63,43 +63,42 @@ function drawGrid() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (showWhiteCanvas) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    return;
-  }
-
-  ctx.strokeStyle = '#333'; // Grid line color
-  ctx.lineWidth = 1;
-
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
 
-  ctx.beginPath();
+  if (showWhiteCanvas) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  } else {
+    ctx.strokeStyle = '#333'; // Grid line color
+    ctx.lineWidth = 1;
+    ctx.beginPath();
 
-  // Draw vertical lines outward from the exact canvas center.
-  for (let x = centerX; x <= canvas.width; x += gridSize) {
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
-  }
-  for (let x = centerX - gridSize; x >= 0; x -= gridSize) {
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, canvas.height);
-  }
+    // Draw vertical lines outward from the exact canvas center.
+    for (let x = centerX; x <= canvas.width; x += gridSize) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+    }
+    for (let x = centerX - gridSize; x >= 0; x -= gridSize) {
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, canvas.height);
+    }
 
-  // Draw horizontal lines outward from the exact canvas center.
-  for (let y = centerY; y <= canvas.height; y += gridSize) {
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-  }
-  for (let y = centerY - gridSize; y >= 0; y -= gridSize) {
-    ctx.moveTo(0, y);
-    ctx.lineTo(canvas.width, y);
-  }
+    // Draw horizontal lines outward from the exact canvas center.
+    for (let y = centerY; y <= canvas.height; y += gridSize) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+    }
+    for (let y = centerY - gridSize; y >= 0; y -= gridSize) {
+      ctx.moveTo(0, y);
+      ctx.lineTo(canvas.width, y);
+    }
 
-  ctx.stroke();
+    ctx.stroke();
+  }
 
   // Draw a thicker plus sign at the exact canvas center.
+  ctx.strokeStyle = '#333';
   ctx.beginPath();
   ctx.lineWidth = centerLineWidth;
 
