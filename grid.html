@@ -16,11 +16,23 @@ canvas {
 <script>
 const canvas = document.getElementById('gridCanvas');
 const ctx = canvas.getContext('2d');
-const gridSize = 15; // Size of each grid square in pixels
+let gridSize = 15; // Size of each grid square in pixels
 const centerLineWidth = 4;
 
 let showWhiteCanvas = false;
 let plusIsFullWidth = true;
+
+function setGridSize(nextSize) {
+  const parsedSize = Number(nextSize);
+
+  if (!Number.isFinite(parsedSize) || parsedSize <= 0) {
+    return false;
+  }
+
+  gridSize = Math.max(2, Math.round(parsedSize));
+  drawGrid();
+  return true;
+}
 
 function toggleFullscreen() {
   const docEl = document.documentElement;
@@ -103,11 +115,18 @@ function showHelp() {
     '/ : Show this help\n' +
     'w or g : Toggle white canvas / grid\n' +
     'f : Toggle fullscreen\n' +
-    'p : Toggle full-width plus sign'
+    'p : Toggle full-width plus sign\n' +
+    'n : Set grid size\n' +
+    '+ or = : Increase grid size\n' +
+    '- : Decrease grid size'
   );
 }
 
 function handleKeydown(event) {
+  if (event.metaKey || event.ctrlKey || event.altKey) {
+    return;
+  }
+
   if (event.key === '/') {
     event.preventDefault();
     showHelp();
@@ -128,6 +147,29 @@ function handleKeydown(event) {
   if (event.key === 'p' || event.key === 'P') {
     plusIsFullWidth = !plusIsFullWidth;
     drawGrid();
+    return;
+  }
+
+  if (event.key === 'n' || event.key === 'N') {
+    const input = prompt('Enter grid size in pixels:', String(gridSize));
+
+    if (input === null) {
+      return;
+    }
+
+    if (!setGridSize(input)) {
+      alert('Grid size must be a positive number.');
+    }
+    return;
+  }
+
+  if (event.key === '+' || event.key === '=') {
+    setGridSize(gridSize + 1);
+    return;
+  }
+
+  if (event.key === '-') {
+    setGridSize(gridSize - 1);
   }
 }
 
