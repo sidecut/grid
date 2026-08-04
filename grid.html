@@ -112,7 +112,7 @@ function drawGrid() {
 function showHelp() {
   alert(
     'Keyboard shortcuts:\n' +
-    '/ : Show this help\n' +
+    '/ or ? : Show this help\n' +
     'w or g : Toggle white canvas / grid\n' +
     'f : Toggle fullscreen\n' +
     'p : Toggle full-width plus sign\n' +
@@ -127,7 +127,7 @@ function handleKeydown(event) {
     return;
   }
 
-  if (event.key === '/') {
+  if (event.key === '/' || event.key === '?') {
     event.preventDefault();
     showHelp();
     return;
