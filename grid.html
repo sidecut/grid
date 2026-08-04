@@ -43,15 +43,15 @@ function drawGrid() {
 
   ctx.stroke();
 
-  // Draw a thicker centered plus sign to split the grid into four quadrants.
-  const centerX = canvas.width / 2;
-  const centerY = canvas.height / 2;
+  // Draw a thicker plus sign snapped to the nearest grid intersection.
+  const centerX = Math.round((canvas.width / 2) / gridSize) * gridSize;
+  const centerY = Math.round((canvas.height / 2) / gridSize) * gridSize;
   ctx.beginPath();
   ctx.lineWidth = centerLineWidth;
-  ctx.moveTo(centerX, 0);
-  ctx.lineTo(centerX, canvas.height);
-  ctx.moveTo(0, centerY);
-  ctx.lineTo(canvas.width, centerY);
+  ctx.moveTo(centerX, centerY - gridSize);
+  ctx.lineTo(centerX, centerY + gridSize);
+  ctx.moveTo(centerX - gridSize, centerY);
+  ctx.lineTo(centerX + gridSize, centerY);
   ctx.stroke();
 }
 
