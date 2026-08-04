@@ -17,6 +17,29 @@ canvas {
 const canvas = document.getElementById('gridCanvas');
 const ctx = canvas.getContext('2d');
 
+function toggleFullscreen() {
+  const docEl = document.documentElement;
+
+  if (!document.fullscreenElement) {
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen().catch(() => {
+        // Ignore fullscreen errors that can happen on unsupported environments.
+      });
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen();
+    }
+    return;
+  }
+
+  if (document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {
+      // Ignore fullscreen errors that can happen on unsupported environments.
+    });
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
 function drawGrid() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -56,5 +79,6 @@ function drawGrid() {
 }
 
 window.addEventListener('resize', drawGrid);
+document.addEventListener('click', toggleFullscreen);
 drawGrid();
 </script>
