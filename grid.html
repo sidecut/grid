@@ -101,7 +101,7 @@ function showHelp() {
   alert(
     'Keyboard shortcuts:\n' +
     '/ : Show this help\n' +
-    'w : Toggle white canvas / grid\n' +
+    'w or g : Toggle white canvas / grid\n' +
     'f : Toggle fullscreen\n' +
     'p : Toggle full-width plus sign'
   );
@@ -114,7 +114,7 @@ function handleKeydown(event) {
     return;
   }
 
-  if (event.key === 'w' || event.key === 'W') {
+  if (event.key === 'w' || event.key === 'W' || event.key === 'g' || event.key === 'G') {
     showWhiteCanvas = !showWhiteCanvas;
     drawGrid();
     return;
