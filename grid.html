@@ -9,19 +9,58 @@ body, html {
 canvas {
   display: block;
 }
+#helpScreen {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  background: #fff;
+  color: #111;
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#helpContent {
+  max-width: 760px;
+  width: 100%;
+}
+#helpContent h1 {
+  margin: 0 0 16px;
+  font-size: 28px;
+}
+#helpContent p {
+  margin: 8px 0;
+}
 </style>
 <body>
 <canvas id="gridCanvas"></canvas>
+<div id="helpScreen">
+  <div id="helpContent">
+    <h1>Grid Controls</h1>
+    <p>Click, press H, or press Space to leave help mode.</p>
+    <p>/ or ? : Show help mode</p>
+    <p>w or g : Toggle white canvas / grid</p>
+    <p>f : Toggle fullscreen</p>
+    <p>p : Toggle full-width plus sign</p>
+    <p>n : Set grid size</p>
+    <p>+ or = : Increase grid size</p>
+    <p>- : Decrease grid size</p>
+  </div>
+</div>
 </body>
 <script>
 const canvas = document.getElementById('gridCanvas');
 const ctx = canvas.getContext('2d');
+const helpScreen = document.getElementById('helpScreen');
 const settingsStorageKey = 'gridCanvasSettings';
 let gridSize = 15; // Size of each grid square in pixels
 const centerLineWidth = 4;
 
 let showWhiteCanvas = false;
 let plusIsFullWidth = true;
+let isHelpMode = true;
 
 function saveSettings() {
   const settings = {
@@ -72,7 +111,7 @@ function setGridSize(nextSize) {
 
   gridSize = Math.max(2, Math.round(parsedSize));
   saveSettings();
-  drawGrid();
+  render();
   return true;
 }
 
@@ -159,17 +198,29 @@ function drawGrid() {
   ctx.stroke();
 }
 
-function showHelp() {
-  alert(
-    'Keyboard shortcuts:\n' +
-    '/ or ? : Show this help\n' +
-    'w or g : Toggle white canvas / grid\n' +
-    'f : Toggle fullscreen\n' +
-    'p : Toggle full-width plus sign\n' +
-    'n : Set grid size\n' +
-    '+ or = : Increase grid size\n' +
-    '- : Decrease grid size'
-  );
+function render() {
+  if (isHelpMode) {
+    canvas.style.display = 'none';
+    helpScreen.style.display = 'flex';
+    return;
+  }
+
+  helpScreen.style.display = 'none';
+  canvas.style.display = 'block';
+  drawGrid();
+}
+
+function exitHelpMode() {
+  if (!isHelpMode) {
+    return;
+  }
+
+  isHelpMode = false;
+  render();
+}
+
+function handleClick() {
+  exitHelpMode();
 }
 
 function handleKeydown(event) {
@@ -177,16 +228,27 @@ function handleKeydown(event) {
     return;
   }
 
+  const isSpace = event.key === ' ' || event.key === 'Spacebar';
+
+  if (isHelpMode) {
+    if (event.key === 'h' || event.key === 'H' || isSpace) {
+      event.preventDefault();
+      exitHelpMode();
+    }
+    return;
+  }
+
   if (event.key === '/' || event.key === '?') {
     event.preventDefault();
-    showHelp();
+    isHelpMode = true;
+    render();
     return;
   }
 
   if (event.key === 'w' || event.key === 'W' || event.key === 'g' || event.key === 'G') {
     showWhiteCanvas = !showWhiteCanvas;
     saveSettings();
-    drawGrid();
+    render();
     return;
   }
 
@@ -198,7 +260,7 @@ function handleKeydown(event) {
   if (event.key === 'p' || event.key === 'P') {
     plusIsFullWidth = !plusIsFullWidth;
     saveSettings();
-    drawGrid();
+    render();
     return;
   }
 
@@ -225,8 +287,9 @@ function handleKeydown(event) {
   }
 }
 
-window.addEventListener('resize', drawGrid);
+window.addEventListener('resize', render);
+document.addEventListener('click', handleClick);
 document.addEventListener('keydown', handleKeydown);
 loadSettings();
-drawGrid();
+render();
 </script>
